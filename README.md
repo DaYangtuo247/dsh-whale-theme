@@ -19,7 +19,7 @@ Everything theme-related for DeepSeek Harness (web and DSH NEXT) in one plugin: 
 
 Renamed from dsh-claude-glass on 2026-11-11 and from dsh-claude-theme on 2026-11-16 (the saved options keep the `dsh-claude-theme.settings` key, so existing preferences carry over). The background was the third-party plugin **dsh-client-ui-deepseek-bg** v1.0.0 (MIT), merged in on 2026-11-11 and rewritten around this bundle. The original zip and its local-change notes are archived in `../_archive/plugin-cleanup-2026-11-11/`.
 
-Part of a set of independent DeepSeek Harness UI bundles: **dsh-composer-display** (the input box and what sits on it), **dsh-conversation-enhancer** (the conversation view), **dsh-claude-shell** (the app frame), **dsh-whale-theme** (background, glass, fonts and its own Settings › 主题 page) and **dsh-context-monitor** (context usage in the composer and in a 上下文透视 tab). Each one works on its own; they share one build script, vendored here as `scripts/`.
+Part of a set of independent DeepSeek Harness UI bundles: [dsh-composer-display](https://github.com/DaYangtuo247/dsh-composer-display) (the input box and what sits on it), [dsh-conversation-enhancer](https://github.com/DaYangtuo247/dsh-conversation-enhancer) (the conversation view), [dsh-whale-theme](https://github.com/DaYangtuo247/dsh-whale-theme) (background, glass, fonts and its own Settings › 主题 page) and [dsh-context-monitor](https://github.com/DaYangtuo247/dsh-context-monitor) (context usage in the composer and in a 上下文透视 tab). Each one works on its own; they share one build script, vendored here as `scripts/`.
 
 ## Background (`src/parts/05-background.ts` + the engines in `src/lib/`)
 
