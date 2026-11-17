@@ -1,6 +1,6 @@
 # dsh-whale-theme
 
-Everything theme-related for DeepSeek Harness (web and DSH NEXT) in one plugin: the DeepSeek-website background (whale centred on the main area, idle pause), see-through shell panels, and one liquid-glass material for every raised surface. Fonts, sizes and text / command colours are in dsh-conversation-enhancer. Turning it off leaves the Claude-style layout from dsh-composer-display / -transcript / -shell on dsh's default solid look.
+Everything theme-related for DeepSeek Harness (web and DSH NEXT) in one plugin: the DeepSeek-website background (whale centred on the main area, idle pause), see-through shell panels, and one liquid-glass material for every raised surface. Fonts, sizes and text / command colours are in dsh-conversation-enhancer. Turning it off leaves the Claude-style layout from dsh-composer-display / dsh-conversation-enhancer / dsh-claude-shell on dsh's default solid look.
 
 | File | Part | What it does |
 | --- | --- | --- |
@@ -17,7 +17,7 @@ Everything theme-related for DeepSeek Harness (web and DSH NEXT) in one plugin: 
 | `src/parts/07-settings.ts` | `dsh-theme-settings` | The theme's own settings, on the Settings › 主题 tab and on the bundle's plugin page: background / whale / grid / idle pause / glass strength (`themePrefs()`) |
 | `src/parts/08-fonts.ts` | `dsh-chat-fonts` | 界面字体, 回复字体 and 代码字体 rows on the 主题 page (slot `settings.whale-theme.item`); its CSS is generated at runtime, so it stays in TS |
 
-Renamed from dsh-claude-glass on 2026-11-11 and from dsh-claude-theme on 2026-11-16 (the saved options keep the `dsh-claude-theme.settings` key, so existing preferences carry over). The background was the third-party plugin **dsh-client-ui-deepseek-bg** v1.0.0 (MIT), merged in on 2026-11-11 and rewritten around this bundle. The original zip and its local-change notes are archived in `../_archive/plugin-cleanup-2026-11-11/`.
+Renamed from dsh-claude-glass on 2026-11-11 and from dsh-claude-theme on 2026-11-16 (the saved options keep the `dsh-claude-theme.settings` key, so existing preferences carry over). The background was the third-party plugin **dsh-client-ui-deepseek-bg** v1.0.0 (MIT), merged in on 2026-11-11 and rewritten around this bundle. The original zip and its local-change notes are kept in the author's private archive, not in this repo.
 
 Part of a set of independent DeepSeek Harness UI bundles: [dsh-composer-display](https://github.com/DaYangtuo247/dsh-composer-display) (the input box and what sits on it), [dsh-conversation-enhancer](https://github.com/DaYangtuo247/dsh-conversation-enhancer) (the conversation view), [dsh-whale-theme](https://github.com/DaYangtuo247/dsh-whale-theme) (background, glass, fonts and its own Settings › 主题 page) and [dsh-context-monitor](https://github.com/DaYangtuo247/dsh-context-monitor) (context usage in the composer and in a 上下文透视 tab). Each one works on its own; they share one build script, vendored here as `scripts/`.
 
