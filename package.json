@@ -1,0 +1,53 @@
+{
+  "name": "dsh-whale-theme",
+  "version": "1.0.0",
+  "description": "Everything theme-related: the DeepSeek-website animated background (whale centred on the main area, paused when idle), see-through shell panels with a frosted sidebar, and one liquid-glass material for every raised surface, in light and dark; its own Settings › 主题 page for background, glass and fonts.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc -p . --noEmit",
+    "check": "node build.mjs && node ./scripts/verify-corner-shape.mjs ."
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-theme",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
+  },
+  "devDependencies": {
+    "sass": "1.108.2",
+    "typescript": "7.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DaYangtuo247/dsh-whale-theme.git"
+  },
+  "homepage": "https://github.com/DaYangtuo247/dsh-whale-theme#readme",
+  "bugs": {
+    "url": "https://github.com/DaYangtuo247/dsh-whale-theme/issues"
+  }
+}

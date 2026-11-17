@@ -1,0 +1,5 @@
+# pnpm 12 reads its settings here, not from package.json.
+# sass only needs @parcel/watcher for `sass --watch`; the build never watches,
+# so its postinstall is denied and `pnpm install` no longer stops on it.
+allowBuilds:
+  '@parcel/watcher': false

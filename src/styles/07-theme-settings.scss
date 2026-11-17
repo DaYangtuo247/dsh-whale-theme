@@ -1,0 +1,26 @@
+/*!
+ * Static CSS for the theme settings part (parts/07-settings.ts): the 动态背景 / 鲸鱼 / 星座网格
+ * fade-out states, the 毛玻璃 (clear / standard / frosted) blur and tint overrides, and the
+ * settings page's .dct-page / .dct-head rows. Injected as the `theme-settings` sheet
+ * (CSS_THEME_SETTINGS).
+ */
+
+/* 动态背景 off: only the backdrop colour; whale / grid off: their layer. Faded rather than display:none, so the
+   canvases keep their size (no reset, nothing drawn into a 0×0 canvas) and switching back fades the last frame in. */
+#dsh-ds-bg :is(#dsh-ds-aurora,#dsh-ds-constellation){transition:opacity .45s ease,visibility 0s}
+#dsh-ds-bg .dsh-ds-whale{transition:transform .5s cubic-bezier(.2,.7,.2,1),opacity .45s ease,visibility 0s}
+html[data-dct-bg="off"] #dsh-ds-bg :is(#dsh-ds-aurora,.dsh-ds-whale,#dsh-ds-constellation),
+html[data-dct-no-whale] #dsh-ds-bg .dsh-ds-whale,
+html[data-dct-no-grid] #dsh-ds-bg #dsh-ds-constellation{opacity:0;visibility:hidden;transition-delay:0s,.45s}
+html[data-dct-bg="off"] #dsh-ds-bg .dsh-ds-whale,html[data-dct-no-whale] #dsh-ds-bg .dsh-ds-whale{transition-delay:0s,0s,.45s}
+@media (prefers-reduced-motion:reduce){#dsh-ds-bg :is(#dsh-ds-aurora,.dsh-ds-whale,#dsh-ds-constellation){transition:none!important}}
+/* 毛玻璃 strength: blur and how much of the surface colour covers the background */
+html[data-dct-glass="clear"] body{--dg-blur:blur(14px) saturate(1.3);--dg-blur-soft:blur(8px) saturate(1.2);--dg-blur-card:blur(12px)}
+html[data-dct-glass="clear"] body[data-ds-dark-theme]{--dg-tint:rgba(44,45,50,.34);--dg-tint-strong:rgba(36,37,42,.5)}
+html[data-dct-glass="clear"] body:not([data-ds-dark-theme]){--dg-tint:rgba(255,255,255,.36);--dg-tint-strong:rgba(255,255,255,.52)}
+html[data-dct-glass="frosted"] body{--dg-blur:blur(64px) saturate(1.6);--dg-blur-soft:blur(40px) saturate(1.5);--dg-blur-card:blur(32px)}
+html[data-dct-glass="frosted"] body[data-ds-dark-theme]{--dg-tint:rgba(44,45,50,.74);--dg-tint-strong:rgba(36,37,42,.84)}
+html[data-dct-glass="frosted"] body:not([data-ds-dark-theme]){--dg-tint:rgba(255,255,255,.76);--dg-tint-strong:rgba(255,255,255,.86)}
+.dct-page{display:flex;flex-direction:column}
+.dct-head{padding:20px 0 4px;font-size:12px;line-height:18px;color:var(--dsw-alias-label-tertiary)}
+.dct-head:first-child{padding-top:0}

@@ -1,0 +1,318 @@
+/* ===== dsh-background · background */
+
+/* theme tokens for the background's own glass; 06-glass.js reuses them */
+body[data-ds-dark-theme]{--dsb-surface:rgba(13,15,19,.55);--dsb-border:hsla(0,0%,100%,.08)}
+body:not([data-ds-dark-theme]){--dsb-surface:hsla(0,0%,100%,.45);--dsb-border:rgba(0,0,0,.08)}
+
+#dsh-ds-bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
+  background:linear-gradient(180deg,#9cc1e7 0%,rgba(250,250,250,0) 100%),#f9f8f8;animation:dsh-ds-enter 1.8s ease-out backwards}
+#dsh-ds-bg.dsh-ds-dark{background:#0a0a0a}
+/* the deepseek.com hero mask: full strength at the top, fading out toward the bottom */
+#dsh-ds-aurora,#dsh-ds-constellation{position:absolute;inset:0;width:100%;height:100%;display:block;
+  -webkit-mask:linear-gradient(#000000fc 0%,#000000e8 8.98%,transparent 100%);mask:linear-gradient(#000000fc 0%,#000000e8 8.98%,transparent 100%)}
+.dsh-ds-whale{position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;
+  transform:translate(var(--dsb-whale-x,0px),var(--dsb-whale-y,0px));transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.dsh-ds-whale canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#dsh-ds-bg:not(.dsh-ds-dark) .dsh-ds-whale{filter:url(#dsh-ds-ink);mix-blend-mode:multiply}
+@keyframes dsh-ds-enter{0%{opacity:0;filter:blur(20px)}100%{opacity:1;filter:blur(0)}}
+@media (prefers-reduced-motion:reduce){#dsh-ds-bg{animation:none}.dsh-ds-whale{transition:none}}
+@media (prefers-reduced-transparency:reduce){#dsh-ds-bg:not(.dsh-ds-dark) .dsh-ds-whale{opacity:.6}}
+
+/* the shell lets the background through: page, layout frame (and DSH NEXT's opaque centre column),
+   view roots (conversation, details column), sidebar content and the input box's seat */
+body,
+[data-slot="root"] > div,
+[data-slot="root"] :is([class$="_frame"],[class*="_frame "]),
+[data-slot="root"] :is([class$="_frame"],[class*="_frame "]) > :is([class$="_centerCol"],[class*="_centerCol "]),
+:is([data-slot="conversation"],[data-slot="main.conversation"]) > div,
+:is([class$="_detailsCol"],[class*="_detailsCol "]) > div,
+[data-slot="sidebar"] > div,
+[data-composer-seat]{background:transparent!important}
+/* left sidebar: frosted. The blur sits on ::before: backdrop-filter on the column itself would make it the
+   containing block of fixed descendants (the Settings dialog mounts inside it). No z-index on the content
+   either, or that dialog would be trapped under the input box. */
+:is([class$="_sidebarCol"],[class*="_sidebarCol "]){position:relative;background:var(--dsb-surface)!important;border-right-color:var(--dsb-border)!important}
+:is([class$="_sidebarCol"],[class*="_sidebarCol "])::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+/* sticky page headers (Plugins page …) paint an opaque strip in ::before; clear at rest (06-glass.js frosts it once scrolled) */
+[class*="_pageBar"][data-natural]::before{background:transparent!important}
+
+
+/* ===== dsh-glass · glass */
+
+body[data-ds-dark-theme]{
+  --dg-tint:rgba(44,45,50,.56);--dg-tint-strong:rgba(36,37,42,.7);--dg-tint-soft:rgba(255,255,255,.06);
+  --dg-ring:0 0 0 .5px rgba(255,255,255,.1),inset 0 .5px 0 rgba(255,255,255,.08);
+  --dg-shadow:0 10px 32px rgba(0,0,0,.32),0 0 20px rgba(0,0,0,.06);
+  --dg-shadow-input:0 2px 6px rgba(0,0,0,.12),0 8px 24px rgba(0,0,0,.16);
+  --dg-hover:rgba(255,255,255,.07);--dg-line:rgba(255,255,255,.08);--dg-chip:rgba(255,255,255,.08);
+  --dg-mask:rgba(0,0,0,.28);--dg-code:rgba(6,7,10,.42);--dg-code-head:rgba(255,255,255,.03);
+  --dg-select:rgba(64,140,255,.42)}
+body:not([data-ds-dark-theme]){
+  --dg-tint:rgba(255,255,255,.6);--dg-tint-strong:rgba(255,255,255,.74);--dg-tint-soft:rgba(255,255,255,.5);
+  --dg-ring:0 0 0 .5px rgba(0,0,0,.08),inset 0 .5px 0 rgba(255,255,255,.7);
+  --dg-shadow:0 10px 32px rgba(15,23,42,.1),0 0 20px rgba(15,23,42,.04);
+  --dg-shadow-input:0 1px 3px rgba(15,23,42,.05),0 6px 20px rgba(15,23,42,.06);
+  --dg-hover:rgba(0,0,0,.05);--dg-line:rgba(0,0,0,.07);--dg-chip:rgba(0,0,0,.05);
+  --dg-mask:rgba(15,23,42,.12);--dg-code:rgba(15,23,42,.05);--dg-code-head:rgba(15,23,42,.03);
+  --dg-select:rgba(40,110,250,.22)}
+body{--dg-blur:blur(40px) saturate(1.5);--dg-blur-soft:blur(24px) saturate(1.4);--dg-blur-card:blur(20px)}
+
+/* dsh menus already read these tokens: same tint and filter everywhere */
+body[data-ds-dark-theme]{--dsw-specific-menu:rgba(44,45,50,.6)!important;--dsw-menu-backdrop-filter:blur(40px) saturate(150%)!important}
+body:not([data-ds-dark-theme]){--dsw-specific-menu:rgba(255,255,255,.66)!important;--dsw-menu-backdrop-filter:blur(40px) saturate(150%)!important}
+
+/* token layer: dsh's surface tokens (cards, panels, inputs) become translucent tints, so everything built on
+   them — dsh's own pages and any plugin that uses the tokens — sits on the glass without its own rule.
+   bg-base stays opaque: it is what covers content scrolling underneath (sticky bars, fades); the few big
+   panels that use it get their own rule below. Tokens carry no blur, so tints stay modest. */
+html body[data-ds-dark-theme]{
+  --dg-solid-layer-1:var(--dsw-static-neutral-bluish-875);--dg-solid-layer-3:var(--dsw-static-neutral-bluish-800);
+  --dsw-alias-bg-layer-1:rgba(40,41,46,.55);--dsw-alias-bg-layer-2:rgba(50,51,56,.55);--dsw-alias-bg-layer-3:rgba(62,63,68,.6);
+  --dsw-alias-bg-module-platform:rgba(255,255,255,.08)}
+html body:not([data-ds-dark-theme]){
+  --dg-solid-layer-1:var(--dsw-static-neutral-bluish-00);--dg-solid-layer-3:var(--dsw-static-neutral-bluish-00);
+  --dsw-alias-bg-layer-1:rgba(255,255,255,.55);--dsw-alias-bg-layer-2:rgba(255,255,255,.62);--dsw-alias-bg-layer-3:rgba(255,255,255,.72);
+  --dsw-alias-bg-module-platform:rgba(15,23,42,.05)}
+/* bg-base is also the fill of whole panels (files, browser, document preview, the 自动化任务 page …).
+   Inside the right sidebar and the main area of the global pages it means "panel", so there it is the
+   glass underneath; everywhere else (scrims, overlays, the boot screen, fades) it stays opaque. */
+html body :is([class*="_rightbarCol"],[data-global-panel="true"]){--dsw-alias-bg-base:transparent}
+/* …but a sticky header there covered the content scrolling under it with that base: frosted instead, and only
+   once the page is scrolled (dsh sets data-scrolled) — at rest nothing is under it, so it stays clear (no band) */
+body[data-ds-dark-theme] [data-global-panel="true"] [class*="_pageBar"][data-natural][data-scrolled]::before{background:rgba(21,21,23,.5)!important}
+body:not([data-ds-dark-theme]) [data-global-panel="true"] [class*="_pageBar"][data-natural][data-scrolled]::before{background:rgba(255,255,255,.55)!important}
+html body [data-global-panel="true"] [class*="_pageBar"][data-natural][data-scrolled]::before{-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4)}
+/* places that use a layer token as a text / icon colour (white-on-colour badges, halos) keep it solid */
+:is([class*="_tag_"][data-tone="solid"],[class*="_save_"],[class*="_brokenBadge"],[class*="_brokenTip"],[class*="_iconButton"],.text-surface,.lc-dur-halo,.lc-pulse-event-dot){
+  --dsw-alias-bg-layer-1:var(--dg-solid-layer-1);--dsw-alias-bg-layer-3:var(--dg-solid-layer-3)}
+
+/* user message bubble, and the bubble that records answers to the agent's questions (same primitive, no data-message-bubble) */
+/* (exact _bubble class: [class*="_bubble"] also hit the square _bubbleWidth wrapper, a second slab behind the bubble) */
+html body :is([data-message-bubble],[data-question-reply] :is([class$="_bubble"],[class*="_bubble "])){background:var(--dg-tint)!important;-webkit-backdrop-filter:var(--dg-blur-soft)!important;backdrop-filter:var(--dg-blur-soft)!important;
+  box-shadow:var(--dg-ring),0 2px 10px rgba(0,0,0,.06)!important;border:0!important}
+
+/* turn-outline hover card */
+html body [class*="_preview"]:has(>[class*="_previewPrompt"]){background:var(--dg-tint)!important;-webkit-backdrop-filter:var(--dg-blur)!important;backdrop-filter:var(--dg-blur)!important;
+  box-shadow:var(--dg-ring),var(--dg-shadow)!important;border:0!important;border-radius:16px!important}
+
+/* ⌘K search palette (@hyzyn/dsh-search) */
+html body .gs_backdrop{background:var(--dg-mask)!important;-webkit-backdrop-filter:blur(2px)!important;backdrop-filter:blur(2px)!important}
+html body .gs_palette{background:var(--dg-tint-strong)!important;-webkit-backdrop-filter:var(--dg-blur)!important;backdrop-filter:var(--dg-blur)!important;
+  box-shadow:var(--dg-ring),var(--dg-shadow)!important;border-radius:18px!important}
+html body .gs_palette .gs_inputRow{background:transparent!important;border-bottom:1px solid var(--dg-line)!important}
+html body .gs_palette .gs_input{background:transparent!important}
+html body .gs_palette .gs_list{background:transparent!important}
+html body .gs_palette .gs_row{background:transparent!important}
+html body .gs_palette .gs_row:hover,html body .gs_palette .gs_row[aria-selected=true],html body .gs_palette .gs_row[data-active],html body .gs_palette .gs_row.gs_active{background:var(--dg-hover)!important}
+html body .gs_palette .gs_footer{background:transparent!important;border-top:1px solid var(--dg-line)!important}
+html body .gs_palette .gs_key,html body .gs_palette .gs_badge,html body .gs_palette .gs_rowChip{background:var(--dg-chip)!important;border-color:transparent!important;box-shadow:none!important}
+
+/* Settings dialog */
+html body [class*="_overlay"]>[class*="_panel"]:has([class*="_navList"]){background:var(--dg-tint-strong)!important;-webkit-backdrop-filter:var(--dg-blur)!important;backdrop-filter:var(--dg-blur)!important;
+  box-shadow:var(--dg-ring),var(--dg-shadow)!important;border:0!important}
+html body [class*="_overlay"]>[class*="_panel"]:has([class*="_navList"]) :is([class$="_nav"],[class*="_nav "],[class$="_options"],[class*="_options "],[class$="_header"],[class*="_header "]){background:transparent!important}
+/* …inside it the panel is already frosted: dsh's cards (账号, 余额 …) were a second grey slab with a bright 0.2 border, and the
+   current nav row a solid grey block. Cards become a faint fill with the glass hairline, nav rows the same hover tint as menus. */
+body[data-ds-dark-theme] [class*="_overlay"]>[class*="_panel"]:has([class*="_navList"]){--dg-panel-card:rgba(255,255,255,.04)}
+body:not([data-ds-dark-theme]) [class*="_overlay"]>[class*="_panel"]:has([class*="_navList"]){--dg-panel-card:rgba(255,255,255,.55)}
+html body [class*="_overlay"]>[class*="_panel"]:has([class*="_navList"]) :is([class$="_card"],[class*="_card "],[class$="Card"],[class*="Card "]){background:var(--dg-panel-card)!important;border-color:var(--dg-line)!important;box-shadow:none!important}
+html body [class*="_overlay"]>[class*="_panel"]:has([class*="_navList"]) [class*="_navCell"]{background:transparent!important;transition:background-color .12s ease}
+html body [class*="_overlay"]>[class*="_panel"]:has([class*="_navList"]) [class*="_navCell"]:hover{background:var(--dg-hover)!important}
+html body [class*="_overlay"]>[class*="_panel"]:has([class*="_navList"]) [class*="_navCell"][class*="_active"]{background:var(--dg-chip)!important;box-shadow:var(--dg-ring)!important}
+
+/* ---- surfaces found by a full sweep of every page and panel (2026-11-11), both themes ---- */
+/* inline code outside replies (thinking blocks, tool summaries): dsh paints it solid #292929 / #fafafa */
+html body [class*="_markdown"] :not(pre)>code{background:var(--dg-chip)!important}
+/* 轨迹 view: root, split pane and table each laid a 55% layer, stacked to an almost opaque slab; the view reads over the
+   background like the conversation itself, with only its header strip tinted */
+html body [data-slot="conversation.view"] :is([class$="_split"],[class$="_tablePane"],[class$="_table"],[class$="_ledger"]){background:transparent!important}
+html body [data-slot="conversation.view"] [class$="_root"]:has(>[class*="_ledger"]){background:transparent!important}
+html body [data-slot="conversation.view"] [class$="_plot"]{background:var(--dg-chip)!important}
+/* dsh-context (上下文 tab, 上下文洞察 page): its canvas and stat buttons are solid in the light theme, its cards unblurred */
+html body,html body:not([data-ds-dark-theme]){--lc-canvas:transparent;--lc-control-track:var(--dg-chip)}
+/* :has() rules here only look a fixed depth down (> / >*>): a conversation has ~900 *_root elements, and a
+   :has() that searches a whole subtree is re-run on every DOM change inside it, which made typing and streaming lag.
+   轨迹 toolbar and its 加载更早的历史 bar: layer-1 (half-white in light) with nothing blurred behind */
+html body [data-slot="conversation.view"] [class$="_root"]:has(>[class*="_inner"]>[class*="_actions"]>[class*="_control"]),html body [class*="_historyLoadButton"]{background:var(--dg-tint-strong)!important;-webkit-backdrop-filter:var(--dg-blur-soft);backdrop-filter:var(--dg-blur-soft)}
+html body [class*="_historyLoadButton"]:hover{background:var(--dg-hover)!important}
+html body :is(.dps-panel,.dps-kpi){position:relative;isolation:isolate;border-color:var(--dg-line)!important}
+html body :is(.dps-panel,.dps-kpi)::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;-webkit-backdrop-filter:var(--dg-blur-card);backdrop-filter:var(--dg-blur-card)}
+html body .lc-card,html body .lc-ov-session{position:relative;isolation:isolate;border-color:var(--dg-line)!important;box-shadow:var(--dg-ring)!important}
+html body .lc-card::before,html body .lc-ov-session::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;-webkit-backdrop-filter:var(--dg-blur-card);backdrop-filter:var(--dg-blur-card)}
+/* 插件市场: current category pill was a solid block, the sticky filter bar an opaque strip, the search box unblurred */
+html body [class*="_pill"][class*="_interactive"][class*="_active"]{background:var(--dg-chip)!important;box-shadow:var(--dg-ring)!important;color:var(--dsw-alias-label-primary)!important}
+html body [class*="_stickyHead"]{background:var(--dg-tint-strong)!important;-webkit-backdrop-filter:var(--dg-blur-soft);backdrop-filter:var(--dg-blur-soft)}
+html body [class*="_searchInput"]{background:var(--dg-tint)!important;-webkit-backdrop-filter:var(--dg-blur-card);backdrop-filter:var(--dg-blur-card);border-color:var(--dg-line)!important}
+/* 改动 panel: the checkout bar was an opaque strip across the pane */
+html body [class*="_checkout"]{background:var(--dg-chip)!important;border-color:var(--dg-line)!important}
+/* Settings: dsh's 50% black mask made the frosted dialog read as a dark slab; the same light scrim as the ⌘K palette */
+html body [class*="_overlay"]>[class*="_mask"]:has(+[class*="_panel"]){background:var(--dg-mask)!important}
+
+/* chat width handle. dsh's own: a 2px scrollbar-grey line, shown on hover at --dsh-width-handle-pointer-y, which dsh
+   only updates while dragging, so hover lit a fixed spot; and the line sat right on the input box's edge.
+   Here: the line is moved ~8px outside the input box (content edge + 40px); on hover a short soft line follows the
+   pointer (the listener in apply() feeds the pointer position and --dct-wh-stop, the input box's top); while dragging
+   it runs the full height down to the input box. Level with the input box it stays hidden. */
+html body [data-width-handle]::after{width:1.5px!important;border-radius:1px;bottom:var(--dct-wh-bottom,0px)!important;
+  background:linear-gradient(to bottom,transparent calc(var(--dsh-width-handle-pointer-y,50%) - 56px),var(--dct-grip) var(--dsh-width-handle-pointer-y,50%),transparent calc(var(--dsh-width-handle-pointer-y,50%) + 56px))!important;
+  transition:opacity .18s ease}
+html body [data-width-handle="left"]::after{right:auto!important;left:-6px!important}
+html body [data-width-handle="right"]::after{left:16px!important;right:auto!important}
+html body [data-width-handle][data-dct-wh-off]:not([data-dragging])::after{opacity:0!important}
+html body [data-width-handle][data-dragging]::after{width:2px!important;background:linear-gradient(to bottom,transparent,var(--dct-grip-on) 64px,var(--dct-grip-on) calc(100% - 64px),transparent)!important}
+body[data-ds-dark-theme]{--dct-grip:rgba(255,255,255,.5);--dct-grip-on:rgba(255,255,255,.4)}
+body:not([data-ds-dark-theme]){--dct-grip:rgba(15,23,42,.34);--dct-grip-on:rgba(15,23,42,.26)}
+/* tab strips (right sidebar 开始 / 文件 / README …): the current tab was a solid grey block on glass, and the quiet 开始 tab
+   had no fill at all when current. One glass pill for the current tab, the hover tint for the others. */
+html body [class*="_tabStrip"] [role="tab"]{background:transparent!important;box-shadow:none!important;transition:background-color .12s ease,box-shadow .12s ease}
+html body [class*="_tabStrip"] [role="tab"]:hover{background:var(--dg-hover)!important}
+html body [class*="_tabStrip"] [role="tab"]:is([aria-selected="true"],[class*="_tabActive"]){background:var(--dg-chip)!important;box-shadow:var(--dg-ring)!important}
+
+/* cards on the global pages (插件市场 tiles and cards, 插件全景): the layer tokens are see-through but carry no blur, so over the
+   whale and the grid they read as clear slabs. Frosted like the rest; the blur sits on ::before (a backdrop-filter on the card
+   would trap its fixed ⋯ menus), and dsh's bright 0.2 border becomes the glass hairline. No saturate here: on wide rows
+   (已安装 list) it pushed the aurora's bright patches into loud blue slabs; plain blur keeps every row the same grey. */
+html body [data-global-panel="true"] :is([class$="_card"],[class*="_card "],[class$="_recentTile"],[class*="_recentTile "],.bg-surface.rounded-2xl){position:relative;isolation:isolate;border-color:var(--dg-line)!important;box-shadow:var(--dg-ring),0 2px 12px rgba(0,0,0,.08)!important}
+html body [data-global-panel="true"] :is([class$="_card"],[class*="_card "],[class$="_recentTile"],[class*="_recentTile "],.bg-surface.rounded-2xl)::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;-webkit-backdrop-filter:var(--dg-blur-card);backdrop-filter:var(--dg-blur-card)}
+
+/* Modal dialogs (插件安装确认, confirmations …): their fill is one of the see-through bg-layer tokens above, and with
+   nothing blurring what is behind them the page text showed through the dialog. Same glass as the settings dialog. */
+html body [role="dialog"][aria-modal="true"]{background:var(--dg-tint-strong)!important;-webkit-backdrop-filter:var(--dg-blur)!important;backdrop-filter:var(--dg-blur)!important;box-shadow:var(--dg-ring),var(--dg-shadow)!important}
+
+/* tool-call rows (运行了 N 条命令) and the task card: glass instead of see-through. claude-flow (08)
+   renders its rows inside .dcf-card without data-dcg-member, so cover both or those stay transparent */
+html body :is([data-dcg-member],.dcf-card) [class*="_callRow"]{background:var(--dg-tint)!important;-webkit-backdrop-filter:var(--dg-blur-soft)!important;backdrop-filter:var(--dg-blur-soft)!important;border-color:var(--dg-line)!important}
+/* inside a 提问 tool row: the answers card sits on dsh's solid base; a darker glass well instead. Only that card
+   (it holds the question list): a bash row's own header is also a _card, and painting it made those rows dark slabs */
+html body [class*="_callRow"] :is([class$="_card"],[class*="_card "]):has([class*="_question"]){background:var(--dg-code)!important}
+html body [class*="_callRow"] [class*="_inspectButton"]{background:var(--dg-chip)!important}
+html body [class*="_callRow"] [class*="_inspectButton"]:hover{background:var(--dg-hover)!important}
+/* the agent's live question and plan-review cards above the input box: the input box's glass instead of its solid fill */
+html body :is([data-question-key],[data-plan-review-key])>section{background:var(--dg-tint)!important;-webkit-backdrop-filter:var(--dg-blur)!important;backdrop-filter:var(--dg-blur)!important;
+  box-shadow:var(--dg-ring),var(--dg-shadow)!important;border-color:transparent!important}
+/* task card: the outer section stays see-through (it has no edge, so a tint reads as a slab); only the bordered list is glass */
+html body .dpc-card{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html body .dpc-card .dpc-list{background:var(--dg-tint)!important;-webkit-backdrop-filter:var(--dg-blur-soft)!important;backdrop-filter:var(--dg-blur-soft)!important;border-color:var(--dg-line)!important;box-shadow:var(--dg-ring)!important}
+
+/* 加载更早 pill */
+html body [class*="_older"]>button{background:var(--dg-tint)!important;-webkit-backdrop-filter:var(--dg-blur)!important;backdrop-filter:var(--dg-blur)!important;box-shadow:var(--dg-ring),0 4px 14px rgba(0,0,0,.18)!important;border:0!important;color:var(--dsw-alias-label-secondary)!important}
+html body [class*="_older"]>button:hover{background:var(--dg-tint-strong)!important;color:var(--dsw-alias-label-primary)!important}
+
+/* deliverable file cards (README.md · 03_daily_factor.sql …) and the per-turn changes card: glass, not neutral-850 slabs */
+html body [class*="_root"]:has(>[class*="_file"],>*>[class*="_file"]){--deliverable-fill:var(--dg-tint);--deliverable-hover:var(--dg-tint-strong)}
+html body [class*="_file"]:has(>[class*="_cardPreview"],>*>[class*="_cardPreview"]){-webkit-backdrop-filter:var(--dg-blur-soft)!important;backdrop-filter:var(--dg-blur-soft)!important;border-color:var(--dg-line)!important;box-shadow:var(--dg-ring)!important}
+html body [class*="_file"]:has(>[class*="_cardPreview"],>*>[class*="_cardPreview"]) [class*="_actions"] :is(button,[class*="_split"]){background:var(--dg-chip)!important;border-color:transparent!important;box-shadow:none!important}
+html body [class*="_file"]:has(>[class*="_cardPreview"],>*>[class*="_cardPreview"]) [class*="_actions"] button:hover{background:var(--dg-hover)!important}
+html body [class*="_card"]:has(>[class*="_header"]){--changes-fill:var(--dg-tint);--changes-hover:var(--dg-tint-strong)}
+/* the well inside a tool row (command, output, results) uses the same code surface as code blocks */
+html body,html body[data-ds-dark-theme]{--dtg-band:var(--dg-code)}
+
+/* code blocks: one translucent well; dsh's opaque banner strip on top goes, the banner keeps a faint tint */
+html body .md-code-block{background:var(--dg-code)!important;-webkit-backdrop-filter:blur(16px) saturate(1.3)!important;backdrop-filter:blur(16px) saturate(1.3)!important;
+  box-shadow:0 0 0 .5px var(--dg-line)!important;border-color:transparent!important}
+html body .md-code-block [class*="_bannerWrap"]{background:var(--dg-code-head)!important}
+html body .md-code-block [data-code-block-banner]{background:transparent!important}
+/* the code itself (plain <pre> or shiki's) sits on the well, not on its own opaque fill */
+html body .md-code-block pre,html body .md-code-block [data-code-block-content],html body .md-code-block [data-code-block-content] :is(pre,code,.shiki){background:transparent!important}
+
+/* text selection: a clear macOS-style blue, tuned per theme (dsh's pale accent turns grey on glass);
+   translucent, so selected text keeps its own colour; inline code and inputs take the same fill */
+::selection{background:var(--dg-select)!important}
+:is(code,kbd,input,textarea,[contenteditable])::selection,:is(code,kbd,[contenteditable]) *::selection{background:var(--dg-select)!important}
+/* sidebar list: dsh's bottom fade paints an opaque gradient over the last row; fade the list itself instead */
+html body [class*="_sidebarCol"] [class*="_treeBody"]>[class*="_fade"]{display:none!important}
+html body [class*="_sidebarCol"] [class*="_treeBody"]>[class*="_list"]{-webkit-mask-image:linear-gradient(#000 calc(100% - 24px),transparent);mask-image:linear-gradient(#000 calc(100% - 24px),transparent)}
+/* the transcript scrolls under the composer, and dsh's own fade is made transparent by the background, so text runs into
+   the status row below the input box. A blur only below the input box: it hangs off the box itself (its width plus a fade outside each side),
+   starts behind it so its top edge is hidden, has no tint and fades out at the sides, so there is no visible shape:
+   over the smooth background it shows nothing, it only softens text passing under the status row. Conversation page only:
+   on the new-session page nothing scrolls under the box, and the band smeared its lower edge like a second shadow. */
+html body :is([data-phase="active"],[data-content-phase="active"]) [data-composer-seat]::before{content:none!important}
+html body :is([data-phase="active"],[data-content-phase="active"]) [data-composer-seat] [class*="_root"]:has(> [data-composer-card])::after{content:"";position:absolute;inset:24px -64px 0;z-index:-2;pointer-events:none;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 64px,#000 calc(100% - 64px),transparent);mask-image:linear-gradient(90deg,transparent,#000 64px,#000 calc(100% - 64px),transparent)}
+/* the scroll-to-bottom button: the same glass as the input box */
+html body button[class*="_toBottom"]{background:var(--dg-tint)!important;-webkit-backdrop-filter:var(--dg-blur)!important;backdrop-filter:var(--dg-blur)!important;
+  box-shadow:var(--dg-ring),var(--dg-shadow)!important;border-color:transparent!important}
+html body button[class*="_toBottom"]:hover{background:var(--dg-hover)!important}
+/* input box: the same glass as the settings dialog and the message bubble, with or without dsh-claude-composer.
+   On its own (dsh's layout) the card itself is the box, so it gets the glass. dsh-claude-composer turns the card into
+   display:contents (which paints no background) and draws the box as the root's ::before instead, which gets the
+   same glass, so there is always exactly one. A transparent card with no layer behind it let the transcript show
+   through the input box. */
+/* the blur sits on ::before: a backdrop-filter on the card itself made it the backdrop root of the + / slash menus that open
+   inside it, so those menus could not blur the conversation above the box (their tint alone let the text show through).
+   Only for dsh's own card: with dsh-claude-composer on, the card is display:contents, the glass is the root's ::before
+   below, and a ::before here would cover the whole root, status row included, as a second outline. dsh-claude-composer
+   marks its root with --dco-on:1 (on every page, the new-session hero included); a style query reads it. */
+@container not style(--dco-on: 1){
+html body [data-composer-seat] [data-composer-card]{background:var(--dg-tint)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;isolation:isolate;
+  box-shadow:var(--dg-ring),var(--dg-shadow-input)!important;border-color:transparent!important}
+html body [data-composer-seat] [data-composer-card]::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;-webkit-backdrop-filter:var(--dg-blur);backdrop-filter:var(--dg-blur)}
+}
+/* the blur under the status row (::after above) hangs off this root; dsh-claude-composer sets the same */
+html body [data-composer-seat] [class*="_root"]:has(> [data-composer-card]){position:relative;isolation:isolate}
+/* the input box rests on the page: a lighter shadow than menus and popovers (--dg-shadow) */
+html body [data-composer-seat] [class*="_root"]:has(> [data-composer-card])::before{background:var(--dg-tint)!important;-webkit-backdrop-filter:var(--dg-blur)!important;backdrop-filter:var(--dg-blur)!important;
+  box-shadow:var(--dg-ring),var(--dg-shadow-input)!important}
+/* the new-session usage card (dsh-claude-shell): the same glass as the input box */
+html body .dhs{background:var(--dsb-surface);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-color:var(--dsb-border)}
+body:not([data-ds-dark-theme]) .dhs{--dhs-bg:rgb(246,248,251)}
+body[data-ds-dark-theme] .dhs{--dhs-bg:rgb(24,27,33)}
+/* …inside it everything mixed from that solid base (empty heatmap cells, the current range, level colours) was an opaque slab,
+   and the 14% rules round tiles and boxes were brighter than the glass hairline: translucent fills and the hairline instead */
+body[data-ds-dark-theme] .dhs{--dhs-empty:rgba(255,255,255,.055);--dhs-line:var(--dg-line);--dhs-seg-on:rgba(255,255,255,.13)}
+body:not([data-ds-dark-theme]) .dhs{--dhs-empty:rgba(15,23,42,.06);--dhs-line:var(--dg-line);--dhs-seg-on:rgba(255,255,255,.92)}
+html body .dhs .dhs-tile{background:var(--dg-tint-soft);border-color:var(--dg-line)}
+body[data-ds-dark-theme] .dhs .dhs-tile{background:rgba(255,255,255,.035)}
+html body .dhs .dhs-heat i[data-l="1"],html body .dhs .dhs-legend i[data-l="1"]{background:color-mix(in srgb,var(--dhs-accent) 34%,transparent)}
+html body .dhs .dhs-heat i[data-l="2"],html body .dhs .dhs-legend i[data-l="2"]{background:color-mix(in srgb,var(--dhs-accent) 55%,transparent)}
+html body .dhs .dhs-heat i[data-l="3"],html body .dhs .dhs-legend i[data-l="3"]{background:color-mix(in srgb,var(--dhs-accent) 78%,transparent)}
+/* range picker: one soft track with the current range as a raised pill (as the 已安装 / 插件市场 switch), no cell borders */
+html body .dhs .dhs-seg{border:0;border-radius:9px;padding:2px;gap:2px;background:var(--dhs-empty)}
+html body .dhs .dhs-seg button{height:22px;border:0!important;border-radius:7px;transition:background-color .12s ease,color .12s ease}
+html body .dhs .dhs-seg button:hover{background:var(--dg-hover)}
+html body .dhs .dhs-seg button[aria-pressed=true]{background:var(--dhs-seg-on);box-shadow:var(--dg-ring),0 1px 3px rgba(0,0,0,.12)}
+/* sidebar: no opaque strip behind the account row */
+html body [class*="_sidebarCol"] [class*="_footArea"],html body [class*="_sidebarCol"] [class*="_footArea"]>*{background:transparent!important;box-shadow:none!important}
+
+
+/* right sidebar: the same frosted column as the left one, instead of an opaque pane; its start-page entries are soft glass */
+html body [class*="_rightbarCol"] [data-dockkit-pane]{background:var(--dsb-surface)!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html body [data-slot^="sidebar.right.tab.guide"] button[class*="_entry"]{background:var(--dg-tint-soft)!important;box-shadow:var(--dg-ring)!important;border-color:transparent!important}
+html body [data-slot^="sidebar.right.tab.guide"] button[class*="_entry"]:hover{background:var(--dg-hover)!important}
+
+/* session hover card in the sidebar (dsh's hover portal): dsh keeps it dark with white text in both themes
+   (an inverted tooltip), so it becomes dark glass in both */
+html body [class*="_portal_"]>[class*="_card_"]:has([class*="_hoverContent"]){background:rgba(36,37,42,.74)!important;-webkit-backdrop-filter:var(--dg-blur)!important;backdrop-filter:var(--dg-blur)!important;
+  box-shadow:0 0 0 .5px rgba(255,255,255,.1),inset 0 .5px 0 rgba(255,255,255,.08),0 10px 32px rgba(0,0,0,.28)!important;border:0!important}
+
+
+/* 上下文透视 (dsh-claude-context): glass cards and a frosted sticky toolbar instead of opaque layers */
+html body .clx-toolbar{background:color-mix(in srgb,var(--dsw-alias-bg-base,#fff) 35%,transparent)!important;-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4)}
+html body .clx-card{background:var(--dg-tint)!important;-webkit-backdrop-filter:var(--dg-blur-soft);backdrop-filter:var(--dg-blur-soft);border-color:var(--dg-line)!important}
+html body .clx-ft-st:not(.loaded){background:var(--dg-chip)!important}
+
+
+/* ===== dsh-theme-settings · theme-settings */
+
+/* 动态背景 off: only the backdrop colour; whale / grid off: their layer. Faded rather than display:none, so the
+   canvases keep their size (no reset, nothing drawn into a 0×0 canvas) and switching back fades the last frame in. */
+#dsh-ds-bg :is(#dsh-ds-aurora,#dsh-ds-constellation){transition:opacity .45s ease,visibility 0s}
+#dsh-ds-bg .dsh-ds-whale{transition:transform .5s cubic-bezier(.2,.7,.2,1),opacity .45s ease,visibility 0s}
+html[data-dct-bg="off"] #dsh-ds-bg :is(#dsh-ds-aurora,.dsh-ds-whale,#dsh-ds-constellation),
+html[data-dct-no-whale] #dsh-ds-bg .dsh-ds-whale,
+html[data-dct-no-grid] #dsh-ds-bg #dsh-ds-constellation{opacity:0;visibility:hidden;transition-delay:0s,.45s}
+html[data-dct-bg="off"] #dsh-ds-bg .dsh-ds-whale,html[data-dct-no-whale] #dsh-ds-bg .dsh-ds-whale{transition-delay:0s,0s,.45s}
+@media (prefers-reduced-motion:reduce){#dsh-ds-bg :is(#dsh-ds-aurora,.dsh-ds-whale,#dsh-ds-constellation){transition:none!important}}
+/* 毛玻璃 strength: blur and how much of the surface colour covers the background */
+html[data-dct-glass="clear"] body{--dg-blur:blur(14px) saturate(1.3);--dg-blur-soft:blur(8px) saturate(1.2);--dg-blur-card:blur(12px)}
+html[data-dct-glass="clear"] body[data-ds-dark-theme]{--dg-tint:rgba(44,45,50,.34);--dg-tint-strong:rgba(36,37,42,.5)}
+html[data-dct-glass="clear"] body:not([data-ds-dark-theme]){--dg-tint:rgba(255,255,255,.36);--dg-tint-strong:rgba(255,255,255,.52)}
+html[data-dct-glass="frosted"] body{--dg-blur:blur(64px) saturate(1.6);--dg-blur-soft:blur(40px) saturate(1.5);--dg-blur-card:blur(32px)}
+html[data-dct-glass="frosted"] body[data-ds-dark-theme]{--dg-tint:rgba(44,45,50,.74);--dg-tint-strong:rgba(36,37,42,.84)}
+html[data-dct-glass="frosted"] body:not([data-ds-dark-theme]){--dg-tint:rgba(255,255,255,.76);--dg-tint-strong:rgba(255,255,255,.86)}
+.dct-page{display:flex;flex-direction:column}
+.dct-head{padding:20px 0 4px;font-size:12px;line-height:18px;color:var(--dsw-alias-label-tertiary)}
+.dct-head:first-child{padding-top:0}
+

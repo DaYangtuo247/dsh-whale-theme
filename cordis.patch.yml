@@ -1,0 +1,5 @@
+# Appends the (empty) Host half; the dsh.client declaration makes the web app
+# load ./client.
+- insert:
+    - id: whale-theme
+      name: dsh-whale-theme

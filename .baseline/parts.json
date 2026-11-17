@@ -1,0 +1,33 @@
+[
+  {
+    "id": "dsh-background",
+    "feature": {
+      "zh": "动态背景",
+      "en": "Background",
+      "desc": "极光流体 / 鲸鱼 / 星座网格背景（主题页可细调）",
+      "descEn": "Aurora fluid / whale / constellation backdrop (tunable on the Theme page)"
+    }
+  },
+  {
+    "id": "dsh-glass",
+    "feature": {
+      "zh": "毛玻璃",
+      "en": "Glass",
+      "desc": "浮层、菜单与气泡的统一半透明玻璃材质",
+      "descEn": "One translucent glass material for popovers, menus and bubbles"
+    }
+  },
+  {
+    "id": "dsh-theme-settings",
+    "feature": null
+  },
+  {
+    "id": "dsh-chat-fonts",
+    "feature": {
+      "zh": "字体设置行",
+      "en": "Font rows",
+      "desc": "主题页的界面 / 代码 / 等宽字体三行设置",
+      "descEn": "The three font rows on the Theme settings page"
+    }
+  }
+]
