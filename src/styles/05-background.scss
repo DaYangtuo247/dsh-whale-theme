@@ -12,6 +12,11 @@ body:not([data-ds-dark-theme]){--dsb-surface:hsla(0,0%,100%,.45);--dsb-border:rg
 #dsh-ds-bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
   background:linear-gradient(180deg,#9cc1e7 0%,rgba(250,250,250,0) 100%),#f9f8f8;animation:dsh-ds-enter 1.8s ease-out backwards}
 #dsh-ds-bg.dsh-ds-dark{background:#0a0a0a}
+/* dsh 的基础样式给 body 的每个非 #root 直接子元素都设了 -webkit-app-region:no-drag（portal 出来的
+   菜单/对话框因此仍可点），选择器 body>:not(#root) 带着 #root 的 id 权重。这层整屏 fixed、
+   pointer-events:none，本来不接任何点击，却因此把标题条的窗口拖动区整块挖掉了。把它摘出 no-drag 区：
+   否则 macOS 上标题条拖不动窗口，而问题只在装了本主题时出现。 */
+#dsh-ds-bg{-webkit-app-region:initial!important}
 /* the deepseek.com hero mask: full strength at the top, fading out toward the bottom */
 #dsh-ds-aurora,#dsh-ds-constellation{position:absolute;inset:0;width:100%;height:100%;display:block;
   -webkit-mask:linear-gradient(#000000fc 0%,#000000e8 8.98%,transparent 100%);mask:linear-gradient(#000000fc 0%,#000000e8 8.98%,transparent 100%)}
